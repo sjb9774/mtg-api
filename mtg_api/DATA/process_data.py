@@ -1,12 +1,12 @@
 #!/usr/bin/env python
-from mtg_link.mtg.magic import MtgCardSet, MtgCard, ManaSymbol
-from mtg_link.mtg.colors import Color
-from mtg_link.mtg import TYPES, ALL_COLOR_COMBINATIONS, COLORS
-from mtg_link.models.magic import MtgCardSetModel, MtgCardModel, ManaCostModel, ManaSymbolModel
-from mtg_link.models.magic import TypeModel, SubtypeModel, XCardType, XCardSubtype
-from mtg_link.models.magic import RulingModel, XCardRuling, FormatModel, XCardFormat
-from mtg_link.DATA.card_data_handler import get_card_data
-from mtg_link import db
+from mtg_api.mtg.magic import MtgCardSet, MtgCard, ManaSymbol
+from mtg_api.mtg.colors import Color
+from mtg_api.mtg import TYPES, ALL_COLOR_COMBINATIONS, COLORS
+from mtg_api.models.magic import MtgCardSetModel, MtgCardModel, ManaCostModel, ManaSymbolModel
+from mtg_api.models.magic import TypeModel, SubtypeModel, XCardType, XCardSubtype
+from mtg_api.models.magic import RulingModel, XCardRuling, FormatModel, XCardFormat
+from mtg_api.DATA.card_data_handler import get_card_data
+from mtg_api import db
 from logging import Logger
 from collections import OrderedDict
 import time
