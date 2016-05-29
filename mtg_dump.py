@@ -2,10 +2,10 @@
 import time
 from argparse import ArgumentParser
 
-from mtg_link import db
-from mtg_link.DATA.card_data_handler import get_raw_card_data
-from mtg_link.DATA.process_data import *
-from mtg_link.models.magic import MtgCardSetModel
+from mtg_api import db
+from mtg_api.DATA.card_data_handler import get_raw_card_data
+from mtg_api.DATA.process_data import *
+from mtg_api.models.magic import MtgCardSetModel
 
 if __name__ == '__main__':
     p = ArgumentParser()
