@@ -7,7 +7,7 @@ import os
 def new_engine(uri=None):
     if not uri:
         uri = config.database.uri
-    return create_engine(uri, pool_recycle=3600, pool_size=100)
+    return create_engine(uri, pool_recycle=int(config.sqlalchemy.pool_recycle), pool_size=int(config.sqlalchemy.pool_size))
 engine = new_engine()
 my_session_maker = scoped_session(sessionmaker(bind=engine))
 
