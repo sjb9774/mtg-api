@@ -1,5 +1,5 @@
 from passlib.hash import sha256_crypt
-from mtg_api import db
+from mtg_api.db import db_instance as db
 from mtg_api.models.users import User
 from mtg_api.models.sessions import Session
 from datetime import datetime, timedelta

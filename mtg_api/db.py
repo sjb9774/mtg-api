@@ -1,59 +1,50 @@
 from sqlalchemy.ext.declarative import declarative_base, declared_attr
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy import create_engine, Column, VARCHAR
-from mtg_api.config import config
+from mtg_api.config import Config, CONFIG_PATH
+from mtg_api import app
 import os
 
-def new_engine(uri=None):
-    if not uri:
-        uri = config.database.uri
-    return create_engine(uri, pool_recycle=int(config.sqlalchemy.pool_recycle), pool_size=int(config.sqlalchemy.pool_size))
-engine = new_engine()
-my_session_maker = scoped_session(sessionmaker(bind=engine))
+class MyDatabase(object):
 
-Session = my_session_maker()
-Base = declarative_base()
+    def __init__(self, config, start=True):
+        self.base = declarative_base()
+        self.config = config
+        self.engine = self.new_engine()
+        self.session_maker = scoped_session(sessionmaker(bind=self.engine))
+        if start:
+            self.start()
 
-# python 2.x does not support a single kwarg after variable-length positional args :\
-# manually parse drop_all_kwarg for 'drop_all' flag
-def drop_tables(*tables, **drop_all_kwarg):
-    from _mysql_exceptions import IntegrityError
-    global engine
-    from mtg_api.models import magic
-    drop_all = drop_all_kwarg.get('drop_all', False)
-    go_again = True
-    all_attrs = [attr for attr in dir(magic) if hasattr(getattr(magic, attr), '__table__')]
-    while go_again:
-        go_again = False
-        for attr_name in all_attrs:
-            attr = getattr(magic, attr_name)
-            if attr.__tablename__ in tables or drop_all:
-                try:
-                    attr.__table__.drop(engine, checkfirst=True)
-                # foreign key constraint, we'll get it next time ;)
-                except:
-                    go_again = True
+    def new_session(self):
+        if hasattr(self, "Session") and self.Session:
+            self.Session.close()
+        self.Session = self.session_maker()
+        return self.Session
 
+    def start(self):
+        self.new_engine()
+        self.session_maker = scoped_session(sessionmaker(bind=self.engine))
+        self.new_session()
+        self.base.metadata.bind = self.engine
+        self.base.metadata.create_all()
+
+    def new_engine(self):
+        if hasattr(self, "engine") and self.engine:
+            self.engine.dispose()
+        new_engine = create_engine(self.config.database.uri,
+                                   pool_recycle=int(self.config.sqlalchemy.pool_recycle),
+                                   pool_size=int(self.config.sqlalchemy.pool_size))
+        self.engine = new_engine
+        return new_engine
+
+db_instance = MyDatabase(app.custom_config)
+Base = db_instance.base
 def drop_db():
     cmd = "mysql -u {u} -p{p} -e 'drop database if exists {dbname}; create database {dbname};'".format(u=config.database.username,
                                                                                              p=config.database.password,
                                                                                              dbname=config.database.dbname)
     os.system(cmd)
     initialize()
-
-
-def initialize():
-    global Session
-    global Base
-    global my_session_maker
-    global engine
-    engine.dispose()
-    engine = new_engine()
-    my_session_maker = scoped_session(sessionmaker(bind=engine))
-    Session = my_session_maker()
-    Base.metadata.bind = engine
-
-    Base.metadata.create_all()
 
 id_length = 40
 from uuid import uuid4
@@ -75,15 +66,15 @@ class DefaultMixin():
         return cls.__name__.lower()+'s'
 
     def insert(self, commit=True):
-        Session.add(self)
+        db_instance.Session.add(self)
         if commit:
-            Session.commit()
+            db_instance.Session.commit()
         return self
 
     def delete(self, commit=True):
-        Session.delete(self)
+        db_instance.Session.delete(self)
         if commit:
-            Session.commit()
+            db_instance.Session.commit()
         return self
 
     def update(self, **kwargs):
@@ -92,35 +83,35 @@ class DefaultMixin():
             if hasattr(self, attr):
                 setattr(self, attr, val)
         if commit:
-            Session.commit()
+            db_instance.Session.commit()
         return self
 
     @classmethod
     def get(self, uuid):
-        return Session.query(self).get(uuid)
+        return db_instance.Session.query(self).get(uuid)
 
     @classmethod
     def join(self, other, column=None):
         if column:
-            return Session.query(self).join(other, column)
+            return db_instance.Session.query(self).join(other, column)
         else:
-            return Session.query(self).join(other)
+            return db_instance.Session.query(self).join(other)
 
     @classmethod
     def all(self):
-        return Session.query(self).filter(self.id != None).all()
+        return db_instance.Session.query(self).filter(self.id != None).all()
 
     @classmethod
     def filter(self, *args, **kwargs):
-        return Session.query(self).filter(*args, **kwargs)
+        return db_instance.Session.query(self).filter(*args, **kwargs)
 
     @classmethod
     def filter_by(self, **kwargs):
-        return Session.query(self).filter_by(**kwargs)
+        return db_instance.Session.query(self).filter_by(**kwargs)
 
     @classmethod
     def get_or_make(self, **filter_by_kwargs):
-        existing = Session.query(self).filter_by(**filter_by_kwargs).first()
+        existing = db_instance.Session.query(self).filter_by(**filter_by_kwargs).first()
         if existing:
             return existing
         else:

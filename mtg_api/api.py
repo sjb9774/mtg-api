@@ -2,7 +2,7 @@ from mtg_api.models.magic import MtgCardModel, MtgCardSetModel
 from mtg_api.models.users import User
 from mtg_api.models.sessions import Session
 from mtg_api.utils.search import get_card_suggestions
-import db
+from mtg_api.db import db_instance as db
 
 def get_cards_from_properties(**props):
     cards = MtgCardModel.filter_by(**props)

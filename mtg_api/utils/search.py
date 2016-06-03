@@ -1,5 +1,5 @@
 from mtg_api.models.magic import MtgCardModel, MtgCardSetModel
-from mtg_api import db
+from mtg_api.db import db_instance as db 
 
 def get_card_suggestions(name):
     potential = db.Session.query(MtgCardModel)\

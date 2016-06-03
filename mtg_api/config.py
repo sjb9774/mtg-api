@@ -57,10 +57,11 @@ class ConfigSection(object):
                 p.write(open(get_attr('__path'), 'r+'))
 
 project_base_dir = os.path.dirname(os.path.dirname(__file__))
-conf_path = os.path.join(project_base_dir, 'conf.cfg')
+CONFIG_PATH = os.path.join(project_base_dir, 'conf.cfg')
+TEST_CONFIG_PATH = os.path.join(project_base_dir, 'tests/conf.cfg')
 
-if not os.path.exists(conf_path):
+if not os.path.exists(CONFIG_PATH):
     print "conf.cfg does not exist! You'll need to create it, based off of dummy-config.cfg"
     config = None
 else:
-    config = Config(conf_path, True)
+    config = Config(CONFIG_PATH, True)

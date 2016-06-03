@@ -1,18 +1,18 @@
 from sqlalchemy import Table, Column, VARCHAR, Integer, Boolean, ForeignKey, Enum, Date, Float
 from sqlalchemy.orm import  relationship
-from mtg_api import db
+from mtg_api.db import db_instance as db, IdMixin, Base, DefaultMixin, id_length
 from mtg_api.mtg.magic import MtgCard, MtgCardSet, ManaSymbol, Type, Subtype
 from mtg_api.mtg.colors import Color
 from mtg_api.mtg import ALL_COLOR_COMBINATIONS, TYPES, SET_TYPES
 
-class MtgCardModel( db.IdMixin, db.Base, db.DefaultMixin, MtgCard):
+class MtgCardModel(IdMixin, Base, DefaultMixin, MtgCard):
     __tablename__ = 'cards'
 
     __fields__ = MtgCard.__fields__ + ['raw_power', 'raw_toughness']
 
     multiverse_id = Column(Integer)
     name = Column(VARCHAR(200), nullable=False, index=True) # must create index for foreign keys that reference this
-    set_id = Column(VARCHAR(db.id_length), ForeignKey('sets.id'))
+    set_id = Column(VARCHAR(id_length), ForeignKey('sets.id'))
     colors = Column(Enum(*['/'.join(c) for c in ALL_COLOR_COMBINATIONS]))
 
     power = Column(Float)
@@ -24,7 +24,7 @@ class MtgCardModel( db.IdMixin, db.Base, db.DefaultMixin, MtgCard):
     converted_mana_cost = Column(Integer)
     # can we use a foreign key or will the constraint always fail due to circular referencing?
         # ie Ludevic's Subject.transform_id = 'xxxx' = Ludevic's Abomination.transform_id
-    transform_multiverse_id = Column(VARCHAR(db.id_length))
+    transform_multiverse_id = Column(VARCHAR(id_length))
     rarity = Column(Enum("common", "uncommon", "rare", "special", "mythic rare", "other", "promo", "basic land"))
     text = Column(VARCHAR(1000))
     flavor = Column(VARCHAR(1000))
@@ -46,7 +46,7 @@ class MtgCardModel( db.IdMixin, db.Base, db.DefaultMixin, MtgCard):
                 else:
                     toughness = value
         MtgCard.__init__(self, power=power, toughness=toughness, **kwargs)
-        db.IdMixin.__init__(self)
+        IdMixin.__init__(self)
 
     @property
     def converted_mana_cost(self):
@@ -119,7 +119,7 @@ class MtgCardModel( db.IdMixin, db.Base, db.DefaultMixin, MtgCard):
                 }
         return {k:v for k, v in data.iteritems() if v}
 
-class MtgCardSetModel(db.Base, db.DefaultMixin, db.IdMixin, MtgCardSet):
+class MtgCardSetModel(Base, DefaultMixin, IdMixin, MtgCardSet):
 
     __tablename__ = 'sets'
     name = Column(VARCHAR(200))
@@ -131,11 +131,11 @@ class MtgCardSetModel(db.Base, db.DefaultMixin, db.IdMixin, MtgCardSet):
 
     def __init__(self, **kwargs):
         MtgCardSet.__init__(self, **kwargs)
-        db.IdMixin.__init__(self)
+        IdMixin.__init__(self)
 
 
 from sqlalchemy import event
-class ManaSymbolModel(db.IdMixin, db.Base, db.DefaultMixin, ManaSymbol):
+class ManaSymbolModel(IdMixin, Base, DefaultMixin, ManaSymbol):
 
     __tablename__ = 'mana_symbols'
 
@@ -153,7 +153,7 @@ class ManaSymbolModel(db.IdMixin, db.Base, db.DefaultMixin, ManaSymbol):
     phyrexian = Column(Boolean, default=False)
 
     def __init__(self, *args, **kwargs):
-        db.IdMixin.__init__(self)
+        IdMixin.__init__(self)
         ManaSymbol.__init__(self, **kwargs)
 
 
@@ -184,22 +184,22 @@ def refresh_colors(target, value, old_value, initiator):
             mana_symbol.colors.append(Color(initiator.key))
 
 
-class ManaCostModel(db.IdMixin, db.Base, db.DefaultMixin):
+class ManaCostModel(IdMixin, Base, DefaultMixin):
 
     __tablename__ = 'mana_costs'
 
-    card_id = Column(VARCHAR(db.id_length), ForeignKey('cards.id'))
-    mana_symbol_id = Column(VARCHAR(db.id_length), ForeignKey('mana_symbols.id'))
+    card_id = Column(VARCHAR(id_length), ForeignKey('cards.id'))
+    mana_symbol_id = Column(VARCHAR(id_length), ForeignKey('mana_symbols.id'))
     count = Column(Integer)
     mana_symbol = relationship('ManaSymbolModel')
 
-class FormatModel(db.IdMixin, db.Base, db.DefaultMixin):
+class FormatModel(IdMixin, Base, DefaultMixin):
 
     __tablename__ = 'formats'
 
     name = Column(VARCHAR(200))
 
-class RulingModel(db.IdMixin, db.Base, db.DefaultMixin):
+class RulingModel(IdMixin, Base, DefaultMixin):
 
     __tablename__ = 'rulings'
 
@@ -207,47 +207,47 @@ class RulingModel(db.IdMixin, db.Base, db.DefaultMixin):
     ruling = Column(VARCHAR(5000))
 
 
-class XCardRuling(db.IdMixin, db.Base, db.DefaultMixin):
+class XCardRuling(IdMixin, Base, DefaultMixin):
 
     __tablename__ = 'x_card_rulings'
 
     card_name = Column(VARCHAR(200), ForeignKey('cards.name'), nullable=False)
-    ruling_id = Column(VARCHAR(db.id_length), ForeignKey('rulings.id'), nullable=False)
+    ruling_id = Column(VARCHAR(id_length), ForeignKey('rulings.id'), nullable=False)
 
-class XCardFormat(db.IdMixin, db.Base, db.DefaultMixin):
+class XCardFormat(IdMixin, Base, DefaultMixin):
 
     __tablename__ = 'x_card_formats'
 
     card_name = Column(VARCHAR(200), ForeignKey('cards.name'), nullable=False)
-    format_id = Column(VARCHAR(db.id_length), ForeignKey('formats.id'), nullable=False)
+    format_id = Column(VARCHAR(id_length), ForeignKey('formats.id'), nullable=False)
 
-class TypeModel(db.IdMixin, db.Base, db.DefaultMixin, Type):
+class TypeModel(IdMixin, Base, DefaultMixin, Type):
 
     __tablename__ = 'types'
 
     name = Column(VARCHAR(200))
 
 
-class SubtypeModel(db.IdMixin, db.Base, db.DefaultMixin, Subtype):
+class SubtypeModel(IdMixin, Base, DefaultMixin, Subtype):
 
     __tablename__ = 'subtypes'
 
     name = Column(VARCHAR(200))
 
 
-class XCardType(db.IdMixin, db.Base, db.DefaultMixin):
+class XCardType(IdMixin, Base, DefaultMixin):
 
     __tablename__ = 'x_card_types'
 
-    card_id = Column(VARCHAR(db.id_length), ForeignKey('cards.id'))
-    type_id = Column(VARCHAR(db.id_length), ForeignKey('types.id'))
+    card_id = Column(VARCHAR(id_length), ForeignKey('cards.id'))
+    type_id = Column(VARCHAR(id_length), ForeignKey('types.id'))
     priority = Column(Integer)
 
 
-class XCardSubtype(db.IdMixin, db.Base, db.DefaultMixin):
+class XCardSubtype(IdMixin, Base, DefaultMixin):
 
     __tablename__ = 'x_card_subtypes'
 
-    card_id = Column(VARCHAR(db.id_length), ForeignKey('cards.id'))
-    subtype_id = Column(VARCHAR(db.id_length), ForeignKey('subtypes.id'))
+    card_id = Column(VARCHAR(id_length), ForeignKey('cards.id'))
+    subtype_id = Column(VARCHAR(id_length), ForeignKey('subtypes.id'))
     priority = Column(Integer)
