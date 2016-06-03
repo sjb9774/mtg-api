@@ -5,7 +5,7 @@ from mtg_api.utils.search import get_card_suggestions
 import db
 
 def get_cards_from_properties(**props):
-    cards = MtgCardModel.filter_by(**filtered_args)
+    cards = MtgCardModel.filter_by(**props)
     if props.get('set'):
         cards = cards.join(MtgCardSetModel).filter_by(code=props.get('set')).all()
     return cards
