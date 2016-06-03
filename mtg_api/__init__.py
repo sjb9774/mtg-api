@@ -9,6 +9,7 @@ app = None
 def make_app(ctx):
     global app
     app = Flask(__name__)
+    app.mtg_api_ctx = ctx
     if ctx == TEST:
         app.custom_config = Config(TEST_CONFIG_PATH, True)
     elif ctx == LIVE:

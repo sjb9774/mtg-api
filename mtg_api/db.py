@@ -18,9 +18,9 @@ class MyDatabase(object):
             self.start()
 
     def new_session(self):
-        if hasattr(self, "Session") and self.Session:
-            self.Session.close()
-        self.Session = self.session_maker()
+        if hasattr(self, "_session") and self._session:
+            self._session.close()
+        self._session = self.session_maker()
         return self.Session
 
     def start(self):
@@ -37,15 +37,31 @@ class MyDatabase(object):
             self.engine.dispose()
         new_engine = create_engine(self.config.database.uri,
                                    pool_recycle=int(self.config.sqlalchemy.pool_recycle),
-                                   pool_size=int(self.config.sqlalchemy.pool_size))
+                                   pool_size=int(self.config.sqlalchemy.pool_size),
+                                   echo=False)
         self.engine = new_engine
         return new_engine
 
-    def make_database(self):
-        create_database(self.config.database.uri)
+    def make_database(self, drop_if_exists=False):
+        if drop_if_exists and database_exists(self.config.database.uri):
+            self.drop_database()
+            create_database(self.config.uri)
+        elif not database_exists(self.config.database.uri):
+            create_database(self.config.database.uri)
 
     def drop_database(self):
         drop_database(self.engine.url)
+
+    def close(self):
+        self._session.close()
+        self.engine.dispose()
+
+    @property
+    def Session(self):
+        if not self._session.is_active:
+            self._session.rollback()
+            self.new_session()
+        return self._session
 
 
 
