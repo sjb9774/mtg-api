@@ -1,6 +1,8 @@
 from sqlalchemy.ext.declarative import declarative_base, declared_attr
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy import create_engine, Column, VARCHAR
+from sqlalchemy_utils.functions import create_database, database_exists
+from sqlalchemy_utils.functions import drop_database
 from mtg_api.config import Config, CONFIG_PATH
 from mtg_api import app
 import os
@@ -26,6 +28,8 @@ class MyDatabase(object):
         self.session_maker = scoped_session(sessionmaker(bind=self.engine))
         self.new_session()
         self.base.metadata.bind = self.engine
+        if not database_exists(self.engine.url):
+            self.make_database()
         self.base.metadata.create_all()
 
     def new_engine(self):
@@ -36,6 +40,14 @@ class MyDatabase(object):
                                    pool_size=int(self.config.sqlalchemy.pool_size))
         self.engine = new_engine
         return new_engine
+
+    def make_database(self):
+        create_database(self.config.database.uri)
+
+    def drop_database(self):
+        drop_database(self.engine.url)
+
+
 
 db_instance = MyDatabase(app.custom_config)
 Base = db_instance.base
