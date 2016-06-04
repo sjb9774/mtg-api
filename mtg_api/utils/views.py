@@ -2,6 +2,7 @@ from flask import render_template, request
 from mtg_api import app
 import functools
 from mtg_api.utils.users import get_active_user
+from mtg_api.db import db_instance as db
 
 
 def custom_route(rule, **options):
@@ -18,13 +19,15 @@ def custom_route(rule, **options):
             if options.get('methods'):
                 methods = options.get('methods')
                 if 'GET' in methods and 'POST' in methods:
-                    return f(*args, get_args=get_args, post_args=post_args, **kwargs)
+                    results = f(*args, get_args=get_args, post_args=post_args, **kwargs)
                 elif 'GET' in methods:
-                    return f(*args, get_args=get_args, **kwargs)
+                    results = f(*args, get_args=get_args, **kwargs)
                 elif 'POST' in methods:
-                    return f(*args, post_args=post_args, **kwargs)
+                    results = f(*args, post_args=post_args, **kwargs)
                 else:
-                    return f(*args, **kwargs)
+                    results = f(*args, **kwargs)
+                db.Session.close()
+                return results
 
         app.add_url_rule(rule, endpoint, wrapper, **options)
         return wrapper
