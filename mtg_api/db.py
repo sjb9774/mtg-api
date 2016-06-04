@@ -42,10 +42,17 @@ class MyDatabase(object):
         self.engine = new_engine
         return new_engine
 
+    def drop_tables(self):
+        self._session.close()
+        self.base.metadata.drop_all()
+
+    def make_tables(self):
+        self.base.metadata.create_all()
+
     def make_database(self, drop_if_exists=False):
         if drop_if_exists and database_exists(self.config.database.uri):
             self.drop_database()
-            create_database(self.config.uri)
+            create_database(self.config.database.uri)
         elif not database_exists(self.config.database.uri):
             create_database(self.config.database.uri)
 
@@ -64,8 +71,11 @@ class MyDatabase(object):
         return self._session
 
 
+if app and app.custom_config:
+    db_instance = MyDatabase(app.custom_config)
+else:
+    raise StandardError("MTG-API is not currently running or the configuration is missing. Try using make_app() first.")
 
-db_instance = MyDatabase(app.custom_config)
 Base = db_instance.base
 def drop_db():
     cmd = "mysql -u {u} -p{p} -e 'drop database if exists {dbname}; create database {dbname};'".format(u=config.database.username,
