@@ -19,6 +19,9 @@ def api_get_card(get_args):
         return 'Needs some arguments!'
     else:
         filtered_args = {kw: get_args[kw] for kw in get_args if kw in MtgCardModel.__fields__}
+        card_set = get_args.get('set')
+        if card_set:
+            filtered_args['set'] = card_set
         cards = get_cards_from_properties(**filtered_args)
         return jsonify({'cards':[card.dictify() for card in cards]})
 

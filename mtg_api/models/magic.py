@@ -97,6 +97,17 @@ class MtgCardModel(IdMixin, Base, DefaultMixin, MtgCard):
                                         .filter(XCardSubtype.card_id==self.id)\
                                         .all()]
 
+    @property
+    def image_url(self):
+        return "http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid={}&type=card".format(self.multiverse_id)
+
+    def other_arts(self):
+        return MtgCardModel.filter(MtgCardModel.set_id == self.set_id)\
+                           .filter(MtgCardModel.name == self.name)\
+                           .filter(MtgCardModel.multiverse_id != None)\
+                           .filter(MtgCardModel.multiverse_id != self.multiverse_id)\
+                           .all()
+
     def dictify(self):
         data = {
                     'multiverseId': self.multiverse_id,
@@ -112,8 +123,9 @@ class MtgCardModel(IdMixin, Base, DefaultMixin, MtgCard):
                     'types': self.types,
                     'subtypes': self.subtypes,
                     'cmc': self.converted_mana_cost,
+                    'otherArts': [{"multiverseId": c.multiverse_id} for c in self.other_arts()],
                     'manaCost': {''.join(abbr): num for abbr, num in self.mana_cost},
-                    'imageUrl': 'http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid={}&type=card'.format(self.multiverse_id) if self.multiverse_id else '',
+                    'imageUrl': self.image_url if self.multiverse_id else '',
                     #'imageUrl': '/image?name={name}&set={set_code}'.format(name=self.name, set_code=self.set.code),
                     'allSets': [s.code for s in self.all_sets]
                 }
