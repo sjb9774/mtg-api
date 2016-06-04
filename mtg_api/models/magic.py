@@ -5,6 +5,7 @@ from mtg_api.mtg.magic import MtgCard, MtgCardSet, ManaSymbol, Type, Subtype
 from mtg_api.mtg.colors import Color
 from mtg_api.mtg import ALL_COLOR_COMBINATIONS, TYPES, SET_TYPES
 
+
 class MtgCardModel(IdMixin, Base, DefaultMixin, MtgCard):
     __tablename__ = 'cards'
 

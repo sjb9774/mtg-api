@@ -6,11 +6,12 @@ from mtg_api.models.magic import MtgCardSetModel, MtgCardModel, ManaCostModel, M
 from mtg_api.models.magic import TypeModel, SubtypeModel, XCardType, XCardSubtype
 from mtg_api.models.magic import RulingModel, XCardRuling, FormatModel, XCardFormat
 from mtg_api.DATA.card_data_handler import get_card_data
-from mtg_api import db
+from mtg_api.my_database import MyDatabase
 from logging import Logger
 from collections import OrderedDict
 import time
 import re
+from mtg_api.config import config
 
 def do_data_process(*sets):
     print "Beginning card process..."

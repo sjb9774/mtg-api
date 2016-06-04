@@ -2,7 +2,13 @@
 import time
 from argparse import ArgumentParser
 
-from mtg_api import db
+from mtg_api.my_database import MyDatabase
+from mtg_api.db import setup_database
+from mtg_api.config import config
+
+db = MyDatabase(config)
+setup_database(db)
+
 from mtg_api.DATA.card_data_handler import get_raw_card_data
 from mtg_api.DATA.process_data import *
 from mtg_api.models.magic import MtgCardSetModel
@@ -28,8 +34,8 @@ if __name__ == '__main__':
 
     args = p.parse_args()
     if args.drop and not args.dry:
-        db.drop_tables(drop_all=True)
-        db.initialize()
+        db.drop_tables()
+        db.make_tables()
     if args.sets:
         sets = [s for s in get_raw_card_data().keys() if (args.invert and s not in args.sets) or (not args.invert and s in args.sets)]
     else:
