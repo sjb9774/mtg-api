@@ -7,6 +7,7 @@ from mtg_api.models.magic import TypeModel, SubtypeModel, XCardType, XCardSubtyp
 from mtg_api.models.magic import RulingModel, XCardRuling, FormatModel, XCardFormat
 from mtg_api.DATA.card_data_handler import get_card_data
 from mtg_api.my_database import MyDatabase
+from mtg_api.db import db_instance as db
 from logging import Logger
 from collections import OrderedDict
 import time
@@ -205,7 +206,7 @@ def do_data_process(*sets):
             mtg[set_code]['cards'].append(card)
         print 'Set completed, took {duration} seconds to process'.format(duration=time.time()-set_time)
         set_time = time.time()
-        total_time = time.time() - stime
+    total_time = time.time() - stime
     print 'Processing done, total time {total_time} seconds to process {total_sets} sets and {total_cards} cards.'.format(**locals())
     return mtg, mana_costs, list(types), xtypes, rulings, xrulings, list(formats), xformats
 
