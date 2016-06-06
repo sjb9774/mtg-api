@@ -1,4 +1,4 @@
-from mtg_api import app
+from mtg_api.app import app
 from flask import render_template, jsonify, request, send_from_directory, abort
 from flask import redirect
 from mtg_api.models.magic import MtgCardModel, MtgCardSetModel

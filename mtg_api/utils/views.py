@@ -1,5 +1,5 @@
 from flask import render_template, request
-from mtg_api import app
+from mtg_api.app import app
 import functools
 from mtg_api.utils.users import get_active_user
 from mtg_api.db import db_instance as db

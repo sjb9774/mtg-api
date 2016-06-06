@@ -3,7 +3,7 @@ from sqlalchemy_utils.functions import drop_database
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy import create_engine
-from mtg_api.config import Config, CONFIG_PATH
+from mtg_api.config import Config
 
 class MyDatabase(object):
 

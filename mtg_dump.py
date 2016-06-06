@@ -4,14 +4,7 @@ from argparse import ArgumentParser
 
 from mtg_api.my_database import MyDatabase
 from mtg_api.db import setup_database
-from mtg_api.config import config
-
-db = MyDatabase(config)
-setup_database(db)
-
-from mtg_api.DATA.card_data_handler import get_raw_card_data
-from mtg_api.DATA.process_data import *
-from mtg_api.models.magic import MtgCardSetModel
+from mtg_api.config import Config
 
 if __name__ == '__main__':
     p = ArgumentParser()
@@ -31,8 +24,23 @@ if __name__ == '__main__':
                     help='Overwrite any existing cards or sets that would be added. (May significantly increase processing time)')
     p.add_argument('--dry', action='store_true', default=False,
                     help='Adding this flag prevents any database operations from actually being committed (primarily for debugging).')
+    p.add_argument('-c', '--config', action="store", default="test", help="The config file to use for connecting to the database. ('test' or 'live')")
 
     args = p.parse_args()
+
+    if args.config == "test":
+        config = Config(Config.TEST_CONFIG_PATH, True)
+    elif args.config == "live":
+        config = Config(Config.LIVE_CONFIG_PATH, True)
+    else:
+        raise StandardError("--config should be one of 'test' or 'live'.")
+    db = MyDatabase(config)
+    setup_database(db)
+
+    from mtg_api.DATA.card_data_handler import get_raw_card_data
+    from mtg_api.DATA.process_data import *
+    from mtg_api.models.magic import MtgCardSetModel
+
     if args.drop and not args.dry:
         db.drop_tables()
         db.make_tables()

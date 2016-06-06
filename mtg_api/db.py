@@ -1,6 +1,7 @@
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy import Column, VARCHAR
 from mtg_api.my_database import MyDatabase
+from mtg_api.config import Config
 import os
 
 def drop_db():

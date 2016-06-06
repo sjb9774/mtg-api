@@ -1,13 +1,29 @@
 from ConfigParser import ConfigParser
 import os
 
+project_base_dir = os.path.dirname(os.path.dirname(__file__))
+
+config = None
+def init(config_type):
+    global config
+    if config_type.lower() == "live":
+        config = Config(Config.LIVE_CONFIG_PATH, True)
+    else:
+        config = Config(Config.TEST_CONFIG_PATH, True)
+    return config
+
+
 class Config(object):
+
+    LIVE_CONFIG_PATH = os.path.join(project_base_dir, 'conf.cfg')
+    TEST_CONFIG_PATH = os.path.join(project_base_dir, 'tests/conf.cfg')
 
     def __init__(self, path, auto_write):
         self._parser = ConfigParser()
         self._parser.readfp(open(path))
         self._path = path
         self._auto_write = auto_write
+        self.set_current_config(self)
 
     def __getattr__(self, attr_name):
         if hasattr(self._parser, attr_name):
@@ -23,6 +39,18 @@ class Config(object):
                 d[section][name] = value
 
         return d
+
+    @classmethod
+    def get_current_config(cls):
+        if hasattr(cls, "config"):
+            return cls.config
+        else:
+            return None
+
+    @classmethod
+    def set_current_config(cls, config):
+        cls.config = config
+
 
 
 class ConfigSection(object):
@@ -55,13 +83,3 @@ class ConfigSection(object):
             p.set(get_attr('__name'), attr_name, value)
             if get_attr('__auto_write'):
                 p.write(open(get_attr('__path'), 'r+'))
-
-project_base_dir = os.path.dirname(os.path.dirname(__file__))
-CONFIG_PATH = os.path.join(project_base_dir, 'conf.cfg')
-TEST_CONFIG_PATH = os.path.join(project_base_dir, 'tests/conf.cfg')
-
-if not os.path.exists(CONFIG_PATH):
-    print "conf.cfg does not exist! You'll need to create it, based off of dummy-config.cfg"
-    config = None
-else:
-    config = Config(CONFIG_PATH, True)
