@@ -21,3 +21,7 @@ def get_random_card():
     random_id = multiverse_ids[random.randint(0, len(multiverse_ids))][0]
     random_card = MtgCardModel.filter_by(multiverse_id=random_id).first()
     return random_card
+
+def get_set(set_code):
+    card_set = MtgCardSetModel.filter(MtgCardSetModel.code == set_code).one()
+    return card_set

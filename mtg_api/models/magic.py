@@ -146,6 +146,15 @@ class MtgCardSetModel(Base, DefaultMixin, IdMixin, MtgCardSet):
         MtgCardSet.__init__(self, **kwargs)
         IdMixin.__init__(self)
 
+    def dictify(self):
+        return {
+            'name': self.name,
+            'code': self.code,
+            'block': self.block,
+            'releaseDate': self.release_date.strftime("%m/%d/%y"),
+            'setType': self.set_type
+        }
+
 
 from sqlalchemy import event
 class ManaSymbolModel(IdMixin, Base, DefaultMixin, ManaSymbol):

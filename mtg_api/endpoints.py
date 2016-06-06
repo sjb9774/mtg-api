@@ -6,8 +6,8 @@ from mtg_api.models.users import User
 from mtg_api.models.sessions import Session
 from mtg_api.utils.search import get_card_suggestions
 from mtg_api.utils.users import login, get_active_user, hash_password, create_user
-from mtg_api.utils.views import custom_route, custom_render
-from mtg_api.api import get_cards_from_properties, get_random_card
+from mtg_api.utils.views import custom_route, custom_render, ApiMapper
+from mtg_api.api import get_cards_from_properties, get_random_card, get_set
 from jinja2 import TemplateNotFound
 import json
 import db
@@ -29,3 +29,11 @@ def api_get_card(get_args):
 def api_get_random_card(get_args):
     random_card = get_random_card()
     return jsonify({'cards': [random_card.dictify()]})
+
+@custom_route('/api/set', methods=['GET'])
+def api_get_card_set(get_args):
+    set_code = get_args.get('code') or get_args.get('setCode')
+    card_set = get_set(set_code)
+    results = card_set.dictify()
+    results['cards'] = [{'url': ApiMapper.api_get_card(c, ['multiverse_id']), 'name': c.name} for c in card_set.cards]
+    return jsonify(results)
