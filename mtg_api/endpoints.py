@@ -6,13 +6,13 @@ from mtg_api.models.users import User
 from mtg_api.models.sessions import Session
 from mtg_api.utils.search import get_card_suggestions
 from mtg_api.utils.users import login, get_active_user, hash_password, create_user
-from mtg_api.utils.views import custom_route, custom_render, ApiMapper
+from mtg_api.utils.views import api_route, custom_render, ApiMapper
 from mtg_api.api import get_cards_from_properties, get_random_card, get_set
 from jinja2 import TemplateNotFound
 import json
 import db
 
-@custom_route('/api/card', methods=['GET'])
+@api_route('/api/card', methods=['GET'])
 def api_get_card(get_args):
     if not get_args:
         # TODO: Return a nice page detailing how to use the api
@@ -25,12 +25,12 @@ def api_get_card(get_args):
         cards = get_cards_from_properties(**filtered_args)
         return jsonify({'cards':[card.dictify() for card in cards]})
 
-@custom_route('/api/card/random', methods=['GET'])
+@api_route('/api/card/random', methods=['GET'])
 def api_get_random_card(get_args):
     random_card = get_random_card()
     return jsonify({'cards': [random_card.dictify()]})
 
-@custom_route('/api/set', methods=['GET'])
+@api_route('/api/set', methods=['GET'])
 def api_get_card_set(get_args):
     set_code = get_args.get('code') or get_args.get('setCode')
     card_set = get_set(set_code)

@@ -13,7 +13,7 @@ class ApiMapper(object):
 
     @classmethod
     def register(cls, function, endpoint):
-        ''' Takes an exposed api function (defined as a function that has been decorated with custom_route)
+        ''' Takes an exposed api function (defined as a function that has been decorated with api_route)
         and its assigned endpoint and creates a new method on the ApiMapper class named after that function.
         This new method takes an SqlAlchemy model instance and a list of attribute-names and constructs the
         url one would need to request in order to get information about the model passed.
@@ -37,7 +37,7 @@ class ApiMapper(object):
 
 
 
-def custom_route(rule, **options):
+def api_route(rule, **options):
     def decorator(f):
         endpoint = options.pop('endpoint', None)
         @functools.wraps(f)
