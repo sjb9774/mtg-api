@@ -2,12 +2,13 @@
 import json
 import os
 import mtg_api
+from mtg_api.config import config
 
 __DATA = None
 def get_raw_card_data(*sets):
     global __DATA
     if not __DATA:
-        with open(os.path.abspath(os.path.dirname(mtg_api.__file__)) + '/DATA/more_sets.json', 'r') as cards_file:
+        with open(config.mtg.mtgjson_path, 'r') as cards_file:
             # it's a single-line JSON file
             CARD_DATA = json.loads(unicode(cards_file.readline().replace('−', '-').replace('∞', 'infinity'), 'utf8').encode('utf-8'))
             __DATA = CARD_DATA

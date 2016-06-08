@@ -4,7 +4,7 @@ from argparse import ArgumentParser
 
 from mtg_api.my_database import MyDatabase
 from mtg_api.db import setup_database
-from mtg_api.config import Config
+from mtg_api.config import Config, init as config_init
 
 if __name__ == '__main__':
     p = ArgumentParser()
@@ -28,6 +28,8 @@ if __name__ == '__main__':
 
     args = p.parse_args()
 
+
+    config_init(args.config.lower())
     if args.config == "test":
         config = Config(Config.TEST_CONFIG_PATH, True)
     elif args.config == "live":
