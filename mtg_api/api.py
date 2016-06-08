@@ -18,7 +18,7 @@ def get_random_card():
     multiverse_ids = db.Session.query(MtgCardModel.multiverse_id)\
                                .filter(MtgCardModel.multiverse_id != None)\
                                .all()
-    random_id = multiverse_ids[random.randint(0, len(multiverse_ids))][0]
+    random_id = multiverse_ids[random.randint(0, len(multiverse_ids) - 1)][0]
     random_card = MtgCardModel.filter_by(multiverse_id=random_id).first()
     return random_card
 
