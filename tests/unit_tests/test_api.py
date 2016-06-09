@@ -8,7 +8,6 @@ import datetime
 from flask import Flask
 
 
-
 class APITestCase(unittest.TestCase):
 
     @classmethod
