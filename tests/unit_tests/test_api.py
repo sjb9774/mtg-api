@@ -1,27 +1,18 @@
 import unittest
 import mock
 from tests import app
-from mtg_api.api import get_cards_from_properties, get_random_card
+from tests.unit_tests.base import DbUnitTestBase
+from mtg_api.api import get_cards_from_properties, get_random_card, get_set
 from mtg_api.models.magic import MtgCardModel, MtgCardSetModel
 from mtg_api.db import db_instance as db
 import datetime
-from flask import Flask
 
 
-class APITestCase(unittest.TestCase):
-
-    @classmethod
-    def setUpClass(cls):
-        db.make_database(drop_if_exists=True)
-
-    @classmethod
-    def tearDownClass(self):
-        db.close()
-        db.drop_database()
+class APICardTestCase(DbUnitTestBase):
 
     def setUp(self):
         db.make_tables()
-        APITestCase.load_data()
+        APICardTestCase.load_data()
 
     def tearDown(self):
         db.drop_tables()
@@ -73,3 +64,25 @@ class APITestCase(unittest.TestCase):
     def test_api_get_random_card(self):
         card = get_random_card()
         self.assertTrue(card)
+
+
+class APISetTestCase(DbUnitTestBase):
+
+    def setUp(self):
+        db.make_tables()
+        APISetTestCase.load_data()
+
+    def tearDown(self):
+        db.drop_tables()
+
+    @staticmethod
+    def load_data():
+        card_set = MtgCardSetModel()
+        card_set.name = "Test Set"
+        card_set.code = "TST"
+        card_set.insert()
+        db.Session.commit()
+
+    def test_api_get_set(self):
+        s = get_set("TST")
+        self.assertTrue(s)
