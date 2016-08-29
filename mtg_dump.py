@@ -5,9 +5,7 @@ from argparse import ArgumentParser
 from mtg_api.my_database import MyDatabase
 from mtg_api.db import setup_database
 from mtg_api.config import Config, init as config_init
-from mtg_api.DATA.card_data_handler import get_raw_card_data
-from mtg_api.DATA.process_data import *
-from mtg_api.models.magic import MtgCardSetModel
+
 
 if __name__ == '__main__':
     p = ArgumentParser()

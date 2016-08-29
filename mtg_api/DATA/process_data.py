@@ -155,7 +155,8 @@ def do_data_process(*sets):
                 xrulings.append(xr)
 
 
-            for format_name, format_legality in card_dict.get('legalities', {}).iteritems():
+            for format_dict in card_dict.get('legalities', []):
+                format_name, format_legality = format_dict["format"], format_dict["legality"]
                 if format_legality.lower() == 'legal':
                     format_model = FormatModel.get_or_make(name=format_name)
                     # TODO: RELATE CARD NAME AND FORMAT ID IN XCARDFORMAT, LIKEWISE FOR RULINGS
