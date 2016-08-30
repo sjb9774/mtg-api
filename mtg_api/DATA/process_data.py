@@ -51,7 +51,7 @@ def do_data_process(*sets):
     total_sets = 0
     for set_code, set_data in CARD_DATA:
         total_sets += 1
-        print 'Processing set {set_code} #{num}...'.format(set_code=set_code, num=total_sets)
+        print 'Processing set {set_code}...'.format(set_code=set_code)
         mtg[set_code] = {'set': None, 'cards': []}
         mtg[set_code]['set'] = make_instance(MtgCardSetModel, card_set_prop_map, **set_data)
         for card_dict in set_data['cards']:

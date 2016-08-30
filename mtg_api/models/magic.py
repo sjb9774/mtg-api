@@ -127,10 +127,9 @@ class MtgCardModel(IdMixin, Base, DefaultMixin, MtgCard):
                     'otherArts': [{"multiverseId": c.multiverse_id} for c in self.other_arts()],
                     'manaCost': {''.join(abbr): num for abbr, num in self.mana_cost},
                     'imageUrl': self.image_url if self.multiverse_id else '',
-                    #'imageUrl': '/image?name={name}&set={set_code}'.format(name=self.name, set_code=self.set.code),
                     'allSets': [s.code for s in self.all_sets]
                 }
-        return {k:v for k, v in data.iteritems() if v}
+        return {k: v for k, v in data.iteritems() if v}
 
 class MtgCardSetModel(Base, DefaultMixin, IdMixin, MtgCardSet):
 
