@@ -1,7 +1,6 @@
 from flask import render_template, request
 from mtg_api.app import app
 import functools
-from mtg_api.utils.users import get_active_user
 from mtg_api.db import db_instance as db
 import urllib
 import types
@@ -64,6 +63,3 @@ def api_route(rule, **options):
         app.add_url_rule(rule, endpoint, wrapper, **options)
         return wrapper
     return decorator
-
-def custom_render(template_path, **kwargs):
-    return render_template(template_path, active_user=get_active_user(), **kwargs)

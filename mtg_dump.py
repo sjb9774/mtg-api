@@ -57,7 +57,7 @@ if __name__ == '__main__':
         if existing_sets and not args.force:
             print('These sets already existing the database, ignoring... \
                   (use --force to add them anyway, or --overwrite to overwrite)\n{sets}'.format(sets=', '.join(existing_sets)))
-            sets = [s for s in s if s not in existing_sets]
+            sets = [s for s in sets if s not in existing_sets]
 
     # TODO Make --force and --overwrite relevant
     try:

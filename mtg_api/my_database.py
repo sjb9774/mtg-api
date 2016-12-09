@@ -23,7 +23,7 @@ class MyDatabase(object):
 
     def start(self):
         self.new_engine()
-        self.session_maker = scoped_session(sessionmaker(bind=self.engine))
+        self.session_maker = scoped_session(sessionmaker(bind=self.engine, autoflush=False))
         self.new_session()
         self.base.metadata.bind = self.engine
         if not database_exists(self.engine.url):

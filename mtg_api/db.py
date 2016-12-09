@@ -52,12 +52,16 @@ class DefaultMixin(object):
         return self
 
     def update(self, **kwargs):
-        commit = kwargs.pop('commit', False)
+        commit = kwargs.pop('commit', True)
         for attr, val in kwargs.iteritems():
             if hasattr(self, attr):
                 setattr(self, attr, val)
         if commit:
             db_instance.Session.commit()
+        return self
+
+    def add(self):
+        db_instance.Session.add(self)
         return self
 
     @classmethod
@@ -84,6 +88,10 @@ class DefaultMixin(object):
         return db_instance.Session.query(self).filter_by(**kwargs)
 
     @classmethod
+    def first(self):
+        return db_instance.Session.query(self).first()
+
+    @classmethod
     def get_or_make(self, **filter_by_kwargs):
         existing = db_instance.Session.query(self).filter_by(**filter_by_kwargs).first()
         if existing:
@@ -93,4 +101,4 @@ class DefaultMixin(object):
             for arg, val in filter_by_kwargs.iteritems():
                 if hasattr(new_instance, arg):
                     setattr(new_instance, arg, val)
-            return new_instance.insert(commit=False)
+            return new_instance.insert()
