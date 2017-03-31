@@ -11,7 +11,7 @@ config_structure = [
             {"key": "host", "help": "The database address.", "default": "localhost"},
             {"key": "dbserver", "help": "The database server-type.", "default": "mysql"},
             {"key": "dbname", "help": "The name of the database mtg-api should use.", "default": "mtg_api"},
-            {"key": "dbapi", "help": "The api type of the server.", "default": "mysqldb"},
+            {"key": "dbapi", "help": "The api type of the database.", "default": "mysqldb"},
             {"key": "uri", "default": r"%(dbserver)s+%(dbapi)s://%(username)s:%(password)s@%(host)s/%(dbname)s?charset=utf8"}
         ]
     },

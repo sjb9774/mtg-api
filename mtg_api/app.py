@@ -1,7 +1,7 @@
 from flask import Flask
-from mtg_api.config import Config
-from mtg_api.my_database import MyDatabase
-from mtg_api.db import setup_database
+from .config import Config
+from .my_database import MyDatabase
+from .db import setup_database
 import os
 
 TEST = "test"

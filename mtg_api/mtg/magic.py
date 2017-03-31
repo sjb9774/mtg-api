@@ -44,10 +44,18 @@ from mtg_api.mtg.colors import Color
 
 class ManaSymbol:
 
+    WHITE = "white"
+    BLUE = "blue"
+    BLACK = "black"
+    RED = "red"
+    GREEN = "green"
+    COLORLESS = "colorless"
+    VARIABLE = "variable"
+    GENERIC = "generic"
+
     def __init__(self, colors=None, x=False, phyrexian=False, value=None, label=None):
         # label is a special parameter that only matters for X-cost symbols, it can be
         # 'x', 'y', or 'z' (see Ultimate Nightmare of Wizards Of The Coast Customer Service)
-        #import pudb; pudb.set_trace()
         self.colors = []
         self._color_abbrs = []
         self.label = label
@@ -81,7 +89,7 @@ class ManaSymbol:
         if self.x:
             return '{' + self.label + '}'
         color_array = '/'.join(sorted([color.abbreviation for color in self.colors]) + (['p'] if self.phyrexian else []))
-        #import pudb; pudb.set_trace()
+
         if self.c:
             if color_array:
                 slash = '/'

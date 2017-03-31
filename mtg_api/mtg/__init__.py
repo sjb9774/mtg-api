@@ -33,5 +33,6 @@ SET_TYPES = [
     "premium deck",
     "from the vault",
     "conspiracy",
-    "archenemy"
+    "archenemy",
+    "masterpiece"
 ]

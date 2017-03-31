@@ -1,6 +1,4 @@
 from mtg_api.models.magic import MtgCardModel, MtgCardSetModel
-from mtg_api.models.users import User
-from mtg_api.models.sessions import Session
 from mtg_api.utils.search import get_card_suggestions
 from mtg_api.db import db_instance as db
 

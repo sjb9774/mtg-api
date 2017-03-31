@@ -52,7 +52,6 @@ class Config(object):
         cls.config = config
 
 
-
 class ConfigSection(object):
 
     def __init__(self, name, parser, path, auto_write=True):
