@@ -12,13 +12,12 @@ class APICardTestCase(DbUnitTestBase):
 
     def setUp(self):
         db.make_tables()
-        APICardTestCase.load_data()
+        self.load_data()
 
     def tearDown(self):
         db.drop_tables()
 
-    @staticmethod
-    def load_data():
+    def load_data(self):
         db.base.metadata.create_all()
         test_set = MtgCardSetModel()
         test_set.name = "TEST SET"
@@ -70,13 +69,12 @@ class APISetTestCase(DbUnitTestBase):
 
     def setUp(self):
         db.make_tables()
-        APISetTestCase.load_data()
+        self.load_data()
 
     def tearDown(self):
         db.drop_tables()
 
-    @staticmethod
-    def load_data():
+    def load_data(self):
         card_set = MtgCardSetModel()
         card_set.name = "Test Set"
         card_set.code = "TST"

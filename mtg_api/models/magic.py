@@ -189,9 +189,9 @@ class MtgCardModel(IdMixin, Base, DefaultMixin, MtgCard):
             'rulesText': self.text,
             'flavorText': self.flavor,
             'set': self.set.code,
-            'power': self.raw_power,
-            'toughness': self.raw_toughness,
-            'transformMultiverseId': self.transform_multiverse_id,
+            'power': float(self.raw_power) if (self.raw_power is not None and self.raw_power.isdigit()) else self.raw_power,
+            'toughness': float(self.raw_toughness) if (self.raw_toughness is not None and self.raw_toughness.isdigit()) else self.raw_toughness,
+            'transformMultiverseId': self.transform_card.multiverse_id if self.transform_card else None,
             'loyalty': self.loyalty,
             'colors': self.colors,
             'types': [t.name for t in self.types],
@@ -295,7 +295,8 @@ class ManaSymbolModel(IdMixin, Base, DefaultMixin):
             ManaSymbol.BLUE     : "U",
             ManaSymbol.BLACK    : "B",
             ManaSymbol.RED      : "R",
-            ManaSymbol.GREEN    : "G"
+            ManaSymbol.GREEN    : "G",
+            ManaSymbol.VARIABLE : "X"
         }
         type_str = ""
         if self.phyrexian:
@@ -349,7 +350,7 @@ class ManaCostModel(IdMixin, Base, DefaultMixin):
         return mana_cost
 
     def get_symbol_string(self):
-        wubrg = [ManaSymbol.GENERIC, ManaSymbol.WHITE, ManaSymbol.BLUE, ManaSymbol.BLACK,
+        wubrg = [ManaSymbol.VARIABLE, ManaSymbol.GENERIC, ManaSymbol.WHITE, ManaSymbol.BLUE, ManaSymbol.BLACK,
                  ManaSymbol.RED, ManaSymbol.GREEN, ManaSymbol.COLORLESS]
 
         sym_str = ""

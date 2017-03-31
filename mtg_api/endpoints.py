@@ -1,13 +1,14 @@
 from mtg_api.app import app
 from flask import render_template, jsonify, request, send_from_directory, abort
 from flask import redirect
+from sqlalchemy import func
 from mtg_api.models.magic import MtgCardModel, MtgCardSetModel
 from mtg_api.utils.search import get_card_suggestions
 from mtg_api.utils.views import api_route, ApiMapper
 from mtg_api.api import get_cards_from_properties, get_random_card, get_set
 from jinja2 import TemplateNotFound
 import json
-import db
+from mtg_api.db import db_instance as db
 import re
 
 @api_route('/api/card', methods=['GET'])
@@ -51,3 +52,13 @@ def api_get_card_set(get_args):
     results = card_set.dictify()
     results['cards'] = [{'url': ApiMapper.api_get_card(c, ['multiverse_id']), 'name': c.name} for c in card_set.cards]
     return jsonify(results)
+
+@api_route('/api/find_cards', methods=['GET'])
+def api_find_cards(get_args):
+    name_fragment = get_args.get('name')
+    cards = db.Session.query(MtgCardModel)\
+                           .join(MtgCardSetModel)\
+                           .filter(func.lower(MtgCardModel.name).like('%' + name_fragment.lower() + '%'))\
+                           .order_by(MtgCardModel.name.asc())\
+                           .all()
+    return jsonify({'cards': [c.dictify() for c in cards], 'quantity': len(cards)})
